@@ -34,7 +34,7 @@ def require_admin(
     if payload.get('exp') and datetime.now(UTC).timestamp() > payload['exp']:
         raise HTTPException(status_code=401, detail="Token Expired")
 
-    if role.lower() != "admin" or "manager":
+    if role.lower() not in ["admin", "manager"]:
         raise HTTPException(
             status_code = 403,
             detail= 'Admin/manager privileges required'
