@@ -6,6 +6,7 @@ from auths.auth import decode_token
 from auths.permissions import require_permission
 
 from models.team import Team
+from routers.admin import require_admin
 from schemas.team import TeamResponse, AddTeam, UpdateTeam
 
 token_auth_scheme = HTTPBearer()
@@ -18,16 +19,16 @@ def add_team(
         team: AddTeam,
         credentials: HTTPAuthorizationCredentials = Depends(token_auth_scheme),
         db: Session = Depends(getDb),
-        # current_user = Depends(require_admin)   # only admin
+        current_user = Depends(require_admin)   # only admin
 ):
-    token = credentials.credentials
-    payload = decode_token(token)
-
-    if payload.get('role').lower() != 'admin':
-        raise HTTPException(
-            status_code=403,
-            detail='Admin privileges required'
-        )
+    # token = credentials.credentials
+    # payload = decode_token(token)
+    #
+    # if payload.get('role').lower() != 'admin':
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail='Admin privileges required'
+    #     )
 
     # check if the team name is already exist on the database
     existing = db.query(Team).filter(Team.team_name == team.team_name and Team.branch == team.branch).first()
@@ -38,7 +39,7 @@ def add_team(
     new_team = Team(
         team_name=team.team_name,
         description=team.description,
-        created_by = payload.get('user_id'),
+        created_by = current_user.get('user_id'),
         branch=team.branch,
         status=team.status
     )
