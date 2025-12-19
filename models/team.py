@@ -1,0 +1,20 @@
+from sqlalchemy import Column, String, Integer, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
+from db import Base
+
+# adding team
+class Team(Base):
+    __tablename__ = "team_table"
+
+    id = Column(Integer, primary_key = True, index = True)
+    team_name = Column(String, unique = True, index = True)
+    description = Column(String)
+    created_by = Column(Integer, ForeignKey("users_table.id"), nullable = False)
+    branch = Column(String)
+    status = Column(Boolean, default = True)
+
+    # Foreign key to users.id
+    creator = relationship(
+        "User",
+        back_populates = "teams"
+    )
