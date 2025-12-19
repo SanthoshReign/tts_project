@@ -6,7 +6,7 @@ from db import getDb
 from auths.permissions import require_permission
 from routers.admin import require_admin
 from routers.user import get_current_user
-from schemas.client import CreateClient
+from schemas.client import CreateClient, GetClient
 from models.client import Client
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
@@ -44,7 +44,7 @@ def create_client(client: CreateClient, admin = Depends(require_admin), db: Sess
 # -------------------------------------------------------------------------------------------------------------
 # GET CLIENT - ANY EMPLOYEE
 
-@router.get('/{client_id}', response_model = "GetClient")
+@router.get('/{client_id}', response_model = GetClient)
 def get_client_details(client_id: int, access = Depends(get_current_user), user = Depends(require_permission("view")),db: Session = Depends(getDb)):
     client = (
         db.query(Client)
