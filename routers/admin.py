@@ -88,8 +88,8 @@ def delete_user(
         raise HTTPException(status_code = 404, detail = "User not found")
 
     # if user is already deleted
-    if not deleting_user.is_active:
-        raise HTTPException(status_code = 404, detail = "User is already deleted")
+    # if not deleting_user.is_active:
+    #     raise HTTPException(status_code = 404, detail = "User is already deleted")
 
     # One admin cannot delete another admin - Only a superadmin delete admin
     # if deleting_user.role.lower() == 'admin':
@@ -100,7 +100,7 @@ def delete_user(
     #     raise HTTPException(status_code = 403, detail = "Unauthorised to delete superadmin")
 
     # safe delete - deactivating employee
-    deleting_user.is_active = False
+    # deleting_user.is_active = False
 
     # Audit log
     # log = AuditLog(
@@ -109,9 +109,10 @@ def delete_user(
     #     target_user = deleting_user.username
     # )
     # db.add(log)
+    db.delete(deleting_user)
     db.commit()
-    # db.refresh(log)
-    db.refresh(deleting_user)
+    # # db.refresh(log)
+    # db.refresh(deleting_user)
 
     return {"message": "User Deleted Successfully"}
 

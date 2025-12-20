@@ -5,7 +5,9 @@ from db import Base
 
 
 class Vendor(Base):
-    id = Column(Integer, primary_keys = True)
+    __tablename__ = "vendor_table"
+
+    id = Column(Integer, primary_key = True)
     vendor_name = Column(String)
     category = Column(String)
     contact_person = Column(String)
