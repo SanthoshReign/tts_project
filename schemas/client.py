@@ -20,6 +20,8 @@ class CreateClient(BaseModel):
     location: str
     type_of_property: str
     billing_address: str
+    sales_branch_manager: str
+    designer: str
 
 # ---------------- Get Client --------------
 class GetClient(BaseModel):
@@ -36,8 +38,8 @@ class GetClient(BaseModel):
     type_of_property: str
     billing_address: str
 
-    # sales_branch_manager_id: int
-    # designer_id: int
+    sales_branch_manager: str
+    designer: str
 
     class Config:
         from_attributes = True
@@ -56,6 +58,8 @@ class UpdateClient(BaseModel):
     location: Optional[str]= None
     type_of_property: Optional[str]= None
     billing_address: Optional[str]= None
+    sales_branch_manager: Optional[str]= None
+    designer: Optional[str]= None
 
     class Config:
         from_attributes = True

@@ -7,7 +7,7 @@ from datetime import datetime, UTC
 from db import getDb
 from auths.permissions import require_permission
 from models.user import User, AuditLog
-from schemas.user import AdminUpdateUser
+from schemas.user import AdminUpdateUser, GetUser
 
 token_auth_scheme = HTTPBearer()
 
@@ -54,7 +54,7 @@ def require_admin(
 # GET ALL USERS
 # ------------------------------------------------------------
 
-@router.get('/get-all-users')
+@router.get('/get-all-users', response_model = list[GetUser])
 def get_all_users_details(
         # admin= Depends(require_admin) ,
         db: Session = Depends(getDb)
@@ -62,10 +62,7 @@ def get_all_users_details(
 
     users = db.query(User).all()
 
-    return {
-        "Total Users": len(users),
-        "Data" : users
-    }
+    return users
 
 # ------------------------------------------------------------
 # DELETE USER AFTER LOGIN BY ONLY ADMIN

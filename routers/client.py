@@ -36,7 +36,9 @@ def create_client(
         project_value = client.project_value,
         location = client.location,
         type_of_property = client.type_of_property,
-        billing_address = client.billing_address
+        billing_address = client.billing_address,
+        sales_branch_manager = client.sales_branch_manager,
+        designer = client.designer
     )
 
     db.add(new_client)
@@ -117,3 +119,18 @@ def update_client(
     }
 
 
+# -----------------------------------------------------------------------------------------------
+# DELETE CLIENT
+# -----------------------------------------------------------------------------------------------
+
+@router.delete('/delete-client/{client_id}')
+def delete_client(client_id: int, db: Session = Depends(getDb)):
+    client = db.query(Client).filter(Client.id == client_id).first()
+
+    if not client:
+        raise HTTPException(status_code = 404, detail = "Client not found")
+
+    db.delete(client)
+    db.commit()
+
+    return {"message": f"Client {client.name} deleted successfully"}

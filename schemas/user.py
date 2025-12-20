@@ -25,6 +25,8 @@ class UpdateUser(BaseModel):
 
 # ------ Update User Details by Admin ---
 class AdminUpdateUser(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
     branch: Optional[str] = None
     team: Optional[str] = None
     role: Optional[str] = None

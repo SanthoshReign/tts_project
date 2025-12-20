@@ -7,6 +7,7 @@ from routers import user as user_router
 from routers import team as team_router
 from routers import admin as admin_router
 from routers import client as client_router
+from routers import role as role_router
 
 app = FastAPI()
 
@@ -14,6 +15,7 @@ app.include_router(user_router.router)
 app.include_router(admin_router.router)
 app.include_router(team_router.router)
 app.include_router(client_router.router)
+app.include_router(role_router.router)
 
 settings = get_settings()
 
