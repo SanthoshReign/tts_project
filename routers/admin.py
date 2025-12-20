@@ -88,8 +88,8 @@ def delete_user(
         raise HTTPException(status_code = 404, detail = "User not found")
 
     # if user is already deleted
-    # if not deleting_user.is_active:
-    #     raise HTTPException(status_code = 404, detail = "User is already deleted")
+    if not deleting_user:
+       raise HTTPException(status_code = 404, detail = "User is already deleted")
 
     # One admin cannot delete another admin - Only a superadmin delete admin
     # if deleting_user.role.lower() == 'admin':
@@ -119,7 +119,7 @@ def delete_user(
 # ------------------------------------------------------------
 # UPDATE USER (ADMIN IS ALLOWED TO UPDATE ONLY TEAM, BRANCH, AND ROLE)
 # ------------------------------------------------------------
-@router.patch('/update-user')
+@router.patch('/update-user/{employee_id}')
 def update_user_profile_admin(
         employee_id: int,
         updating_data : AdminUpdateUser = Body(...),
