@@ -17,9 +17,8 @@ router = APIRouter(prefix='/team', tags = ['Teams'])
 @router.post('/add-team', response_model = TeamResponse)
 def add_team(
         team: AddTeam,
-        credentials: HTTPAuthorizationCredentials = Depends(token_auth_scheme),
+        current_user = Depends(require_admin),  # only admin
         db: Session = Depends(getDb),
-        current_user = Depends(require_admin)   # only admin
 ):
     # token = credentials.credentials
     # payload = decode_token(token)
@@ -39,7 +38,7 @@ def add_team(
     new_team = Team(
         team_name=team.team_name,
         description=team.description,
-        created_by = current_user.get('user_id'),
+        created_by = current_user.id,
         branch=team.branch,
         status=team.status
     )
@@ -50,7 +49,27 @@ def add_team(
 
     return new_team
 
-# ---------------------------------------------------------------------------------------------------------------------------------------------
+
+# ------------------------------------------- Get All Team ---------------------------------------------------------------
+@router.get('/', response_model = list[TeamResponse])
+def get_all_teams(db: Session = Depends(getDb)):
+    teams =  db.query(Team).all()
+
+    return teams
+
+
+# ------------------------------------------- Get Team ----------------------------------------------------------------------
+@router.get('/{team_id}', response_model = TeamResponse)
+def get_team(team_id: int, db: Session = Depends(getDb)):
+    team = db.query(Team).filter(Team.id == team_id).first()
+    if not team:
+        raise HTTPException(status_code = 404, detail = "Team not found")
+
+    return team
+
+
+
+# ------------------------------------------- Update Team ------------------------------------------------------------------
 
 @router.patch('/update-team/{team_id}')
 def update_team(team_id: int,

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session, joinedload
 
@@ -6,7 +6,7 @@ from db import getDb
 from auths.permissions import require_permission
 from routers.admin import require_admin
 from routers.user import get_current_user
-from schemas.client import CreateClient, GetClient
+from schemas.client import CreateClient, GetClient, UpdateClient
 from models.client import Client
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
@@ -41,6 +41,15 @@ def create_client(client: CreateClient, admin = Depends(require_admin), db: Sess
 
     return {"message": "Client added successfully"}
 
+# ---------------------------------------------------------------------------------------------------------------
+# GET ALL CLIENTS - ANY EMPLOYEE
+
+@router.get('/get-all-clients', response_model = list[GetClient])
+def get_all_clients_details(access = Depends(get_current_user), user = Depends(require_permission("view_all_clients")), db: Session = Depends(getDb)):
+    clients = db.query(Client).all()
+
+    return clients
+
 # -------------------------------------------------------------------------------------------------------------
 # GET CLIENT - ANY EMPLOYEE
 
@@ -49,8 +58,8 @@ def get_client_details(client_id: int, access = Depends(get_current_user), user 
     client = (
         db.query(Client)
         .options(
-            joinedload(Client.sales_branch_manager),
-            joinedload(Client.designer)
+            joinedload(Client.sales_managers_fk),
+            joinedload(Client.designer_fk)
         )
         .filter(Client.id == client_id)
         .first()
@@ -64,12 +73,31 @@ def get_client_details(client_id: int, access = Depends(get_current_user), user 
 
     return client
 
-
 # ---------------------------------------------------------------------------------------------------------------
-# GET ALL CLIENTS - ANY EMPLOYEE
+# PATCH CLIENT (edit)
 
-@router.get('/get-all-clients')
-def get_all_clients_details(access = Depends(get_current_user), user = Depends(require_permission("view_all_clients")), db: Session = Depends(getDb)):
-    clients = db.query(Client).all()
+@router.patch('/{client_id')
+def update_client(client_id: int, updateclient: UpdateClient = Body(...), db: Session = Depends(getDb)):
+    client = db.query(Client).filter(Client.id == client_id).first()
+    
+    if not client:
+        raise HTTPException(status_code = 404, detail = "Client not found")
 
-    return clients
+    updates = updateclient.model_dump(exclude_unset=True)
+
+    if not updates:
+        return {"Message": "No updates"}
+
+    # change/update only needed fields
+    for field, value in updates.items():
+        setattr(updateclient, field, value)
+
+    db.commit()
+    db.refresh(updateclient)
+
+    return {
+        "message": "Update Successfully",
+        "Updated fields": list(updates.keys())
+    }
+
+

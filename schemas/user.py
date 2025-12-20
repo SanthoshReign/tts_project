@@ -7,16 +7,16 @@ from pydantic import BaseModel, Field, EmailStr
 class CreateUser(BaseModel):
     username: str
     email: EmailStr
-    password: str = Field(min_length = 8, max_length = 15)
+    password: str
     branch: str
     team: str
     role: str
 
 # ------------ Login ---------------------
 class LoginUser(BaseModel):
-    username: str
+    username: Optional[str] = None
     email: EmailStr
-    password: str = Field(min_length = 8, max_length = 15)
+    password: str
 
 # ------- Update User Details -------
 class UpdateUser(BaseModel):

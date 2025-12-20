@@ -15,7 +15,7 @@ router = APIRouter(prefix = '/user', tags = ['User'])
 # --------------------------------
 # SIGN UP
 # --------------------------------
-@router.post('/signup', response_model = SuccessMessage)
+@router.post('/create-user', response_model = SuccessMessage)
 def signup(user: CreateUser, db: Session = Depends(getDb)):
     # check existing 'user'
     # 'User' - database, user - incoming user credentials from front-end

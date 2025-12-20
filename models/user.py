@@ -22,14 +22,14 @@ class User(Base):
 
     clients_sales_manager = relationship(
         "Client",
-        back_populates="sales_managers_fk",
-        foreign_keys = "Client.sales_branch_manager_id"
+        foreign_keys="Client.sales_branch_manager_id",
+        back_populates="sales_managers_fk"
     )
 
     clients_designer = relationship(
         "Client",
-        back_populates="designer_fk",
-        foreign_keys = "Client.designer_id"
+        foreign_keys="Client.designer_id",
+        back_populates="designer_fk"
     )
 
 
