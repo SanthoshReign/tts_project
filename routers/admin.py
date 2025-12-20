@@ -55,7 +55,10 @@ def require_admin(
 # ------------------------------------------------------------
 
 @router.get('/get-all-users')
-def get_all_users_details(admin= Depends(require_admin) , db: Session = Depends(getDb)):
+def get_all_users_details(
+        # admin= Depends(require_admin) ,
+        db: Session = Depends(getDb)
+):
 
     users = db.query(User).all()
 
@@ -69,13 +72,17 @@ def get_all_users_details(admin= Depends(require_admin) , db: Session = Depends(
 # ------------------------------------------------------------
 
 @router.delete("/delete-user/{employee_id}")
-def delete_user(employee_id: int, admin= Depends(require_permission("delete"))  ,db: Session = Depends(getDb)):
+def delete_user(
+        employee_id: int,
+        # admin= Depends(require_permission("delete")),
+        db: Session = Depends(getDb)
+):
     # Delete the user by id and commit
-    admin_id = admin.id
+    # admin_id = admin.id
 
     # Avoid admin deleting himself/herself
-    if admin_id == employee_id:
-        raise HTTPException(status_code = 400, detail = "Admin cannot delete himself")
+    # if admin_id == employee_id:
+    #     raise HTTPException(status_code = 400, detail = "Admin cannot delete himself")
 
     # fetch deleting user from database
     deleting_user = db.query(User).filter(User.id == employee_id).first()
@@ -88,25 +95,25 @@ def delete_user(employee_id: int, admin= Depends(require_permission("delete"))  
         raise HTTPException(status_code = 404, detail = "User is already deleted")
 
     # One admin cannot delete another admin - Only a superadmin delete admin
-    if deleting_user.role.lower() == 'admin':
-        raise HTTPException(status_code = 404, detail = "One admin cannot delete another admin")
+    # if deleting_user.role.lower() == 'admin':
+    #     raise HTTPException(status_code = 404, detail = "One admin cannot delete another admin")
 
     # No one can delete superadmin
-    if deleting_user.role.lower() == "superadmin":
-        raise HTTPException(status_code = 403, detail = "Unauthorised to delete superadmin")
+    # if deleting_user.role.lower() == "superadmin":
+    #     raise HTTPException(status_code = 403, detail = "Unauthorised to delete superadmin")
 
     # safe delete - deactivating employee
     deleting_user.is_active = False
 
     # Audit log
-    log = AuditLog(
-        action = "Delete_user",
-        performed_by = db.query(User.username).filter(User.id == admin_id).first(),
-        target_user = deleting_user.username
-    )
-    db.add(log)
+    # log = AuditLog(
+    #     action = "Delete_user",
+    #     performed_by = db.query(User.username).filter(User.id == admin_id).first(),
+    #     target_user = deleting_user.username
+    # )
+    # db.add(log)
     db.commit()
-    db.refresh(log)
+    # db.refresh(log)
     db.refresh(deleting_user)
 
     return {"message": "User Deleted Successfully"}
@@ -115,8 +122,13 @@ def delete_user(employee_id: int, admin= Depends(require_permission("delete"))  
 # UPDATE USER (ADMIN IS ALLOWED TO UPDATE ONLY TEAM, BRANCH, AND ROLE)
 # ------------------------------------------------------------
 @router.patch('/update-user')
-def update_user_profile_admin(employee_id: int, updating_data : AdminUpdateUser = Body(...), admin = Depends(require_permission("edit")), db: Session = Depends(getDb)):
-    admin_id = admin.id
+def update_user_profile_admin(
+        employee_id: int,
+        updating_data : AdminUpdateUser = Body(...),
+        # admin = Depends(require_permission("edit")),
+        db: Session = Depends(getDb)
+):
+    # admin_id = admin.id
 
     employee_data = db.query(User).filter(User.id == employee_id).first()
 

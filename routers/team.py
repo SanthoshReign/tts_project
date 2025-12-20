@@ -7,6 +7,7 @@ from auths.permissions import require_permission
 
 from models.team import Team
 from routers.admin import require_admin
+from routers.user import get_current_user
 from schemas.team import TeamResponse, AddTeam, UpdateTeam
 
 token_auth_scheme = HTTPBearer()
@@ -17,7 +18,8 @@ router = APIRouter(prefix='/team', tags = ['Teams'])
 @router.post('/add-team', response_model = TeamResponse)
 def add_team(
         team: AddTeam,
-        current_user = Depends(require_admin),  # only admin
+        # current_user = Depends(require_admin),  # only admin,
+        current_user = Depends(get_current_user),
         db: Session = Depends(getDb),
 ):
     # token = credentials.credentials
@@ -74,7 +76,7 @@ def get_team(team_id: int, db: Session = Depends(getDb)):
 @router.patch('/update-team/{team_id}')
 def update_team(team_id: int,
                 team_data: UpdateTeam = Body(...),
-                admin= Depends(require_permission("edit")),
+                # admin= Depends(require_permission("edit")),
                 db: Session = Depends(getDb)
 ):
     team = db.query(Team).filter(Team.id == team_id).first()

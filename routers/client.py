@@ -14,7 +14,11 @@ router = APIRouter(prefix="/clients", tags=["Clients"])
 token_auth_scheme = HTTPBearer()
 
 @router.post('/create-client')
-def create_client(client: CreateClient, admin = Depends(require_admin), db: Session = Depends(getDb)):
+def create_client(
+        client: CreateClient,
+        # admin = Depends(require_admin),
+        db: Session = Depends(getDb)
+):
     # check if the client is already exist
     existing_client = db.query(Client).filter(Client.email == client.email).first()
 
@@ -45,7 +49,10 @@ def create_client(client: CreateClient, admin = Depends(require_admin), db: Sess
 # GET ALL CLIENTS - ANY EMPLOYEE
 
 @router.get('/get-all-clients', response_model = list[GetClient])
-def get_all_clients_details(access = Depends(get_current_user), user = Depends(require_permission("view_all_clients")), db: Session = Depends(getDb)):
+def get_all_clients_details(
+        # access = Depends(get_current_user),
+        # user = Depends(require_permission("view_all_clients")),
+        db: Session = Depends(getDb)):
     clients = db.query(Client).all()
 
     return clients
@@ -54,13 +61,18 @@ def get_all_clients_details(access = Depends(get_current_user), user = Depends(r
 # GET CLIENT - ANY EMPLOYEE
 
 @router.get('/{client_id}', response_model = GetClient)
-def get_client_details(client_id: int, access = Depends(get_current_user), user = Depends(require_permission("view")),db: Session = Depends(getDb)):
+def get_client_details(
+        client_id: int,
+        # access = Depends(get_current_user),
+        # user = Depends(require_permission("view")),
+        db: Session = Depends(getDb)
+):
     client = (
         db.query(Client)
-        .options(
-            joinedload(Client.sales_managers_fk),
-            joinedload(Client.designer_fk)
-        )
+        # .options(
+        #     joinedload(Client.sales_managers_fk),
+        #     joinedload(Client.designer_fk)
+        # )
         .filter(Client.id == client_id)
         .first()
     )
@@ -76,8 +88,12 @@ def get_client_details(client_id: int, access = Depends(get_current_user), user 
 # ---------------------------------------------------------------------------------------------------------------
 # PATCH CLIENT (edit)
 
-@router.patch('/{client_id')
-def update_client(client_id: int, updateclient: UpdateClient = Body(...), db: Session = Depends(getDb)):
+@router.patch('/{client_id}')
+def update_client(
+        client_id: int,
+        updateclient: UpdateClient = Body(...),
+        db: Session = Depends(getDb)
+):
     client = db.query(Client).filter(Client.id == client_id).first()
     
     if not client:
@@ -90,13 +106,13 @@ def update_client(client_id: int, updateclient: UpdateClient = Body(...), db: Se
 
     # change/update only needed fields
     for field, value in updates.items():
-        setattr(updateclient, field, value)
+        setattr(client, field, value)
 
     db.commit()
-    db.refresh(updateclient)
+    db.refresh(client)
 
     return {
-        "message": "Update Successfully",
+        "message": "Client Updated Successfully",
         "Updated fields": list(updates.keys())
     }
 

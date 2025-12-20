@@ -36,8 +36,8 @@ class GetClient(BaseModel):
     type_of_property: str
     billing_address: str
 
-    sales_branch_manager_id: int
-    designer_id: int
+    # sales_branch_manager_id: int
+    # designer_id: int
 
     class Config:
         from_attributes = True
@@ -45,14 +45,17 @@ class GetClient(BaseModel):
 # ------------------- Update Client --------------
 
 class UpdateClient(BaseModel):
-    name: str
-    dob: date
-    email: EmailStr
+    name: Optional[str]= None
+    dob: Optional[date]= None
+    email: Optional[EmailStr]= None
     anniversary: Optional[date] = None
-    mobile: str
-    occupation: str
-    address_of_property: str
-    project_value: int
-    location: str
-    type_of_property: str
-    billing_address: str
+    mobile: Optional[str]= None
+    occupation: Optional[str]= None
+    address_of_property: Optional[str]= None
+    project_value: Optional[int]= None
+    location: Optional[str]= None
+    type_of_property: Optional[str]= None
+    billing_address: Optional[str]= None
+
+    class Config:
+        from_attributes = True

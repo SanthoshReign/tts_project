@@ -18,18 +18,20 @@ class Client(Base):
     location = Column(String(50))
     type_of_property = Column(String(60))
     billing_address = Column(String(150))
-    sales_branch_manager_id = Column(Integer, ForeignKey("users_table.id"), nullable = False)
-    designer_id = Column(Integer, ForeignKey("users_table.id"), nullable = False)
 
-    sales_managers_fk = relationship(
-        "User",
-        foreign_keys=[sales_branch_manager_id],
-        back_populates="clients_sales_manager"
-    )
 
-    designer_fk = relationship(
-        "User",
-        foreign_keys=[designer_id],
-        back_populates="clients_designer"
-    )
+    # sales_branch_manager_id = Column(Integer, ForeignKey("users_table.id"), nullable = False)
+    # designer_id = Column(Integer, ForeignKey("users_table.id"), nullable = False)
+    #
+    # sales_managers_fk = relationship(
+    #     "User",
+    #     foreign_keys=[sales_branch_manager_id],
+    #     back_populates="clients_sales_manager"
+    # )
+    #
+    # designer_fk = relationship(
+    #     "User",
+    #     foreign_keys=[designer_id],
+    #     back_populates="clients_designer"
+    # )
 
