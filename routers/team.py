@@ -40,7 +40,7 @@ def add_team(
     new_team = Team(
         team_name=team.team_name,
         description=team.description,
-        created_by = current_user.id,
+        # created_by = current_user.id,
         branch=team.branch,
         status=team.status
     )
