@@ -77,7 +77,7 @@ def create_payment(
 # ------------------------------------------- GET ORDER ----------------------------------
 @router.get('/get-items/{order_id}', response_model = PaymentResponse)
 def get_order_details(order_id: int, db: Session = Depends(getDb)):
-    order = db.query(PaymentOrder).filter(PaymentOrder == order_id).first()
+    order = db.query(PaymentOrder).filter(PaymentOrder.id == order_id).first()
 
     if not order:
         raise HTTPException(status_code = 404, detail = "Order not found")
