@@ -66,10 +66,9 @@ class PaymentResponse(BaseModel):
 # ------------------------------------- UPDATE -------------------------------------
 
 class PaymentItemUpdate(BaseModel):
-    id: Optional[int] = None  # existing item id
-    item_name: Optional[str]
-    quantity: Optional[int] = Field(gt=0)
-    unit_price: Optional[float] = Field(gt=0)
+    item_name: Optional[str] = None
+    quantity: Optional[int] = Field(default=None, gt=0)
+    unit_price: Optional[float] = Field(default=None, gt=0)
 
 class PaymentUpdate(BaseModel):
     vendor_name: Optional[str]

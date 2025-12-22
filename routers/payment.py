@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from db import getDb
 from models.payment import PaymentItem, PaymentOrder
-from schemas.payment import PaymentResponse, PaymentCreate, PaymentUpdate
+from schemas.payment import PaymentResponse, PaymentCreate, PaymentUpdate, PaymentItemUpdate
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
@@ -193,4 +193,63 @@ def delete_payment_item(
         }
     }
 
+# ------------------------------------------ UPDATING A PARTICULAR ITEM -------------------------------------------------
 
+@router.patch("/{order_id}/items/{item_id}")
+def update_payment_item(
+    order_id: int,
+    item_id: int,
+    data: PaymentItemUpdate,
+    db: Session = Depends(getDb)
+):
+    # 🔹 Check order exists
+    order = db.query(PaymentOrder).filter(PaymentOrder.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Payment order not found")
+
+    # 🔹 Check item belongs to order
+    item = (
+        db.query(PaymentItem)
+        .filter(
+            PaymentItem.id == item_id,
+            PaymentItem.payment_id == order_id
+        )
+        .first()
+    )
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found in this order")
+
+    # Partial update
+    if data.item_name is not None:
+        item.item_name = data.item_name
+    if data.quantity is not None:
+        item.quantity = data.quantity
+    if data.unit_price is not None:
+        item.unit_price = data.unit_price
+
+    # Recalculate item total
+    item.line_total = item.quantity * item.unit_price
+
+    # Recalculate order totals
+    recalculate_order(order)
+
+    db.commit()
+    db.refresh(order)
+
+    return {
+        "message": "Item updated successfully",
+        "order_id": order.id,
+        "item_id": item.id,
+        "updated_item": {
+            "item_name": item.item_name,
+            "quantity": item.quantity,
+            "unit_price": item.unit_price,
+            "line_total": item.line_total
+        },
+        "updated_totals": {
+            "subtotal": order.subtotal,
+            "tax_amount": order.tax_amount,
+            "total_amount": order.total_amount,
+            "balance_amount": order.balance_amount
+        }
+    }
