@@ -15,10 +15,10 @@ class User(Base):
     role = Column(String(100))     # manager, admin, designer, employee
     is_active = Column(Boolean, default = True)  # soft_delete
 
-    teams = relationship(
-        "Team",
-        back_populates = "creator"
-    )
+    # teams = relationship(
+    #     "Team",
+    #     back_populates = "creator"
+    # )
 
     # clients_sales_manager = relationship(
     #     "Client",

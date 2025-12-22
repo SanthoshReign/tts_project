@@ -14,7 +14,7 @@ class Team(Base):
     status = Column(Boolean, default = True)
 
     # Foreign key to users.id
-    creator = relationship(
-        "User",
-        back_populates = "teams"
-    )
+    # creator = relationship(
+    #     "User",
+    #     back_populates = "teams"
+    # )
