@@ -110,4 +110,8 @@ def delete_vendor_payment(invoice_no: str, db: Session = Depends(getDb)):
     db.delete(vendor)
     db.commit()
 
+    return {
+        "message": "Vendor Payment details deleted successfully"
+    }
+
 # ------------------------------------------------------------------------------------------
