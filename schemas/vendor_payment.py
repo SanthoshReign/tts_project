@@ -22,7 +22,7 @@ class UpdateVendorPayment(BaseModel):
     amount_paid: Optional[float] = Field(default=0, ge=0)
 
     payment_method: Optional[str] = None
-    payment_date: Optional[date]
+    payment_date: Optional[date] = None
 
     class Config:
         from_attributes = True
