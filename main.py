@@ -10,6 +10,7 @@ from routers import client as client_router
 from routers import role as role_router
 from routers import vendor as vendor_router
 from routers import payment as payment_router
+from routers import vendor_payment as vendor_payment_router
 
 app = FastAPI()
 
@@ -20,6 +21,7 @@ app.include_router(client_router.router)
 app.include_router(role_router.router)
 app.include_router(vendor_router.router)
 app.include_router(payment_router.router)
+app.include_router(vendor_payment_router.router)
 
 settings = get_settings()
 
