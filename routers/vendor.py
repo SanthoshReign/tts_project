@@ -81,7 +81,7 @@ def edit_vendor(vendor_id: int, vendor_update : EditVendor = Body(...), db: Sess
     db.refresh(vendor)
 
     return {
-        "message": "Client Updated Successfully",
+        "message": "Vendor Updated Successfully",
         "Updated fields": list(updates.keys())
     }
 

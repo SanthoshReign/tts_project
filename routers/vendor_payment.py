@@ -91,6 +91,19 @@ def update_vendor_payment(invoice_no: str, update_data : UpdateVendorPayment = B
     db.refresh(vendor)
 
     return {
-        "message": "Client Updated Successfully",
+        "message": "Vendor Payment Updated Successfully",
         "Updated fields": list(updates.keys())
     }
+
+# -----------------------------------------------------------------------------------------
+@router.delete('/delete-vendor-payment/{invoice_no}')
+def delete_vendor_payment(invoice_no: str, db: Session = Depends(getDb)):
+    vendor = db.query(VendorPayment).filter(VendorPayment.invoice_no == invoice_no).first()
+
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor Payment not found")
+
+    db.delete(vendor)
+    db.commit()
+
+# ------------------------------------------------------------------------------------------

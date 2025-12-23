@@ -48,7 +48,7 @@ def update_role(role_id: int, role_update : UpdateRole = Body(...), db: Session 
     db.refresh(role)
 
     return {
-        "message": "Client Updated Successfully",
+        "message": "Role Updated Successfully",
         "Updated fields": list(updates.keys())
     }
 
