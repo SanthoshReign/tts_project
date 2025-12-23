@@ -87,6 +87,10 @@ def update_vendor_payment(invoice_no: str, update_data : UpdateVendorPayment = B
     for field, value in updates.items():
         setattr(vendor, field, value)
 
+    # recalculate balance AFTER updates
+    if "amount_paid" in updates or "total_amount" in updates:
+        vendor.balance = vendor.total_amount - vendor.amount_paid
+
     db.commit()
     db.refresh(vendor)
 
