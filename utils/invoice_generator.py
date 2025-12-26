@@ -1,13 +1,16 @@
 import os
+from io import BytesIO
+
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 
 def generate_invoice_pdf(payment):
+    buffer = BytesIO()
     os.makedirs("invoices", exist_ok = True)
 
     file_path = f"invoices/{payment.invoice_no}.pdf"
-    c = canvas.Canvas(file_path, pagesize = A4)
+    c = canvas.Canvas(buffer, pagesize = A4)
 
     y = 800
     c.setFont("Helvetica-Bold", 14)
@@ -48,5 +51,9 @@ def generate_invoice_pdf(payment):
         c.drawString(50, y, f"{label}: {value}")
         y -= 25
 
+    c.showPage()
     c.save()
-    return file_path
+    # return file_path
+
+    buffer.seek(0)
+    return buffer.read()

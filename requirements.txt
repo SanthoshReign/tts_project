@@ -9,6 +9,7 @@ datetime
 email-validator
 cryptography
 reportlab
+cloudinary
 psycopg2-binary
 argon2_cffi
 python-jose~=3.5.0

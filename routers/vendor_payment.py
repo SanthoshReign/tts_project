@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from db import getDb
 from models.vendor_payment import VendorPayment
 from schemas.vendor_payment import VendorPaymentCreate, UpdateVendorPayment
+from utils.cloudinary_upload import upload_invoice_pdf
 from utils.invoice_generator import generate_invoice_pdf
 
 router = APIRouter(prefix='/vendor_payments' ,tags=['vendor_payments'])
@@ -48,7 +49,12 @@ def create_vendor_payment(ven_pay: VendorPaymentCreate, db: Session = Depends(ge
 
     # Auto generate invoice
     invoice_path = generate_invoice_pdf(new_vendor_payment)
-    new_vendor_payment.invoice_path = invoice_path
+
+    # Upload to Cloudinary
+    invoice_url = upload_invoice_pdf(invoice_path, invoice_no)
+
+
+    new_vendor_payment.invoice_path = invoice_url
     db.commit()
 
     return {
