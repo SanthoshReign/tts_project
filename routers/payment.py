@@ -148,48 +148,64 @@ def update_payment(
     return payment
 
 # ---------------------------------------------- DELETE ITEM ---------------------------------
-@router.delete("/delete-item/{item_id}")
+@router.delete("/delete-item/{order_id}/{item_id}")
 def delete_payment_item(
+    order_id: int,
     item_id: int,
     db: Session = Depends(getDb)
 ):
-    item = db.query(PaymentItem).filter(PaymentItem.id == item_id).first()
+    # item = db.query(PaymentItem).filter(PaymentItem.id == item_id).first()
+    #
+    # if not item:
+    #     raise HTTPException(status_code=404, detail="Payment item not found")
+    #
+    # payment = db.query(PaymentOrder).filter(
+    #     PaymentOrder.id == item.payment_id
+    # ).first()
+    #
+    # if not payment:
+    #     raise HTTPException(status_code=404, detail="Parent payment order not found")
+    order = db.query(PaymentOrder).filter(PaymentOrder.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Payment order not found")
 
+    # 🔹 Check item belongs to order
+    item = (
+        db.query(PaymentItem)
+        .filter(
+            PaymentItem.id == item_id,
+            PaymentItem.payment_id == order_id
+        )
+        .first()
+    )
     if not item:
-        raise HTTPException(status_code=404, detail="Payment item not found")
-
-    payment = db.query(PaymentOrder).filter(
-        PaymentOrder.id == item.payment_id
-    ).first()
-
-    if not payment:
-        raise HTTPException(status_code=404, detail="Parent payment order not found")
+        raise HTTPException(status_code=404, detail="Item not found in this order")
 
     # Delete item
     db.delete(item)
     db.commit()
 
     # Recalculate totals
-    subtotal = sum(i.quantity * i.unit_price for i in payment.items)
-    tax_amount = subtotal * (payment.tax_percent / 100)
-    total_amount = subtotal + tax_amount + payment.other_charges
-    balance_amount = total_amount - payment.paid_amount
+    subtotal = sum(i.quantity * i.unit_price for i in order.items)
+    tax_amount = subtotal * (order.tax_percent / 100)
+    total_amount = subtotal + tax_amount + order.other_charges
+    balance_amount = total_amount - order.paid_amount
 
-    payment.subtotal = round(subtotal, 2)
-    payment.tax_amount = round(tax_amount, 2)
-    payment.total_amount = round(total_amount, 2)
-    payment.balance_amount = round(balance_amount, 2)
+    order.subtotal = round(subtotal, 2)
+    order.tax_amount = round(tax_amount, 2)
+    order.total_amount = round(total_amount, 2)
+    order.balance_amount = round(balance_amount, 2)
 
     db.commit()
 
     return {
         "message": "Payment item deleted successfully",
-        "payment_id": payment.id,
+        "payment_id": order.id,
         "updated_totals": {
-            "subtotal": payment.subtotal,
-            "tax_amount": payment.tax_amount,
-            "total_amount": payment.total_amount,
-            "balance_amount": payment.balance_amount
+            "subtotal": order.subtotal,
+            "tax_amount": order.tax_amount,
+            "total_amount": order.total_amount,
+            "balance_amount": order.balance_amount
         }
     }
 
@@ -202,12 +218,12 @@ def update_payment_item(
     data: PaymentItemUpdate,
     db: Session = Depends(getDb)
 ):
-    # 🔹 Check order exists
+    # Check order exists
     order = db.query(PaymentOrder).filter(PaymentOrder.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Payment order not found")
 
-    # 🔹 Check item belongs to order
+    # Check item belongs to order
     item = (
         db.query(PaymentItem)
         .filter(
