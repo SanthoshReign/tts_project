@@ -13,5 +13,5 @@ class Vendor(Base):
     contact_person = Column(String)
     phone = Column(String(20), unique=True, nullable=False)
     address = Column(String)
-    branch = Branches
+    branch = Column(String, nullable = False)
     gst_no = Column(String)
