@@ -58,7 +58,10 @@ def create_vendor_payment(ven_pay: VendorPaymentCreate, db: Session = Depends(ge
     db.commit()
 
     return {
-        "message": "Vendor Payment added successfully"
+        "message": "Vendor Payment added successfully",
+        "vendor_name" : ven_pay.vendor_name,
+        "invoice_no" : ven_pay.invoice_no,
+        "invoice_date" : ven_pay.invoice_date
     }
 
 # -----------------------------------------------------------------------------
