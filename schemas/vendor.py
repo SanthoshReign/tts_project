@@ -34,3 +34,6 @@ class VendorResponse(BaseModel):
     branch: Branches
     gst_no: str
 
+    class Config:
+        from_attributes = True
+

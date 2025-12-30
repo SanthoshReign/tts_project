@@ -3,12 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import get_settings
 from db import Base, engine
 
-from routers import user as user_router
+from routers import user as user_router, vendor_client
 from routers import team as team_router
 from routers import admin as admin_router
 from routers import client as client_router
 from routers import role as role_router
 from routers import vendor as vendor_router
+from routers import vendor_client as vendor_client_router
 from routers import payment as payment_router
 from routers import vendor_payment as vendor_payment_router
 
@@ -22,6 +23,7 @@ app.include_router(role_router.router)
 app.include_router(vendor_router.router)
 app.include_router(payment_router.router)
 app.include_router(vendor_payment_router.router)
+app.include_router(vendor_client_router.router)
 
 settings = get_settings()
 

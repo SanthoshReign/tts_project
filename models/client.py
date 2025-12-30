@@ -2,6 +2,8 @@ from sqlalchemy import Integer, String, Column, Date, ForeignKey
 from sqlalchemy.orm import relationship
 
 from db import Base
+from models.vendor_client import vendor_client
+
 
 class Client(Base):
     __tablename__ = "client_table"
@@ -35,4 +37,10 @@ class Client(Base):
     #     foreign_keys=[designer_id],
     #     back_populates="clients_designer"
     # )
+
+    vendors = relationship(
+        "Vendor",
+        secondary = vendor_client,
+        back_populates = "clients"
+    )
 
